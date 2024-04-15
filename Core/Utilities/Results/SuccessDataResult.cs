@@ -23,7 +23,7 @@ namespace Core.Utilities.Results
 
         }
 
-        public SuccessDataResult() : base(default, true)
+        public SuccessDataResult(IDataResult<T> dataResult) : base(default, true)
         {
 
         }

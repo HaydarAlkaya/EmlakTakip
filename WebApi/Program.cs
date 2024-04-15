@@ -6,6 +6,7 @@ using Core.Extensions;
 using Core.Utilities.IoC;
 using Core.Utilities.Security.Encryption;
 using Core.Utilities.Security.JWT;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -62,11 +63,6 @@ builder.Services.AddDependencyResolvers(new ICoreModule[]
 
 var app = builder.Build();
 
-
-app.UseCors(builder => builder
-    .AllowAnyOrigin()            // Tüm originlere izin ver
-    .AllowAnyMethod()            // Tüm HTTP metodlarýna izin ver (GET, POST, PUT, DELETE vb.)
-    .AllowAnyHeader());          // Tüm header'lara izin ver
 
 
 app.Environment.IsDevelopment();

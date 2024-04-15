@@ -5,6 +5,6 @@ namespace Entities.Concrete
     public class Category : IEntity
     {
         public int Id { get; set; }
-        public string Naeme { get; set; }
+        public string Name { get; set; }
     }
 }
