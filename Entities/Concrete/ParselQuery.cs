@@ -6,8 +6,6 @@ namespace Entities.Concrete
     {
         public int Id { get; set; }
         public int OwnerShipId { get; set; }
-        public byte[] Images { get; set; }
-        public string Enlem { get; set; }
-        public string Boylam { get; set; }
+        public string Locations { get; set; }
     }
 }

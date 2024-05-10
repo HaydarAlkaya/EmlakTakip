@@ -23,5 +23,6 @@ namespace Entities.Concrete
         public string Price { get; set; }
         public int CustomerId { get; set; }
         public bool Status { get; set; }
+        public int CategoryId { get; set; }
     }
 }
