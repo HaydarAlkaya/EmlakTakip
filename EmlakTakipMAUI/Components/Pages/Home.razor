@@ -1,10 +1,11 @@
 ﻿@page "/"
 @using EmlakTakipMAUI.Data
 @using EmlakTakipMAUI.Model
-@inject IOwnerShipService OwnerShipService;
+@inject IOwnerShipService OwnerShipService
 
 
-@for (int i = 0; i < count; i++)
+
+@foreach (var item in ownerShips)
 {
     <div class="container ">
         <div class="row">
@@ -12,27 +13,24 @@
                 <div class="card">
                     <img src="images\favicon.png" class="card-img-top" alt=" " style="width:128px;height:128px;">
                     <div class="card-body">
-                        <h5 class="card-title">Card title</h5>
+                        <h5 class="card-title">@item.price</h5>
                         <p class="card-text">This is a longer card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
                         <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+}
+@foreach (var item in homeOwner)
+{
+    <div class="container ">
+        <div class="row">
             <div class="col-md-4 mb-4">
                 <div class="card">
-                    <img src="images\IMG.jpg" class="card-img-top" alt="..." style="width:128px;height:128px;">
+                    <img src="images\favicon.png" class="card-img-top" alt=" " style="width:128px;height:128px;">
                     <div class="card-body">
-                        <h5 class="card-title">Card title </h5>
-                        <p class="card-text">This is a longer card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
-                        <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4 mb-4">
-                <div class="card">
-                    <img src="images\Ekran.png" class="card-img-top" alt="..." style="width:128px;height:128px;">
-                    <div class="card-body">
-                        <h5 class="card-title">Card title</h5>
+                        <h5 class="card-title">@item.price</h5>
                         <p class="card-text">This is a longer card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
                         <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
                     </div>
@@ -42,41 +40,19 @@
     </div>
 }
 @code {
-     private int count;
-     private int Id { get; set; }
-     private string Title { get; set; }
-     private string Contents { get; set; }
-     private int CityId { get; set; }
-     private int TownId { get; set; }
-     private int NeighbourhoodId { get; set; }
-     private float SquareFeet { get; set; }
-     private string? RoomCount { get; set; }
-     private string? BathCount { get; set; }
-     private string? BuildAge { get; set; }
-     private bool? RentOrSale { get; set; }
-     private string? FloorLocation { get; set; }
-     private string? TotalFloor { get; set; }
-     private bool? Exchange { get; set; }
-     private string? Ada { get; set; }
-     private string? Parsel { get; set; }
-     private string Price { get; set; }
-     private int CustomerId { get; set; }
-     private bool Status { get; set; }
-     private int CategoryId { get; set; }
+    List<OwnerShip> ownerShips = new();
+    List<OwnerShip> homeOwner = new();
 
     protected override async Task OnInitializedAsync()
     {
-
-        var result = OwnerShipService.GetAll().Result;
-        count = result.Count;
-        var resultArsa = new List<OwnerShip>();
-        var resultHome = new List<OwnerShip>();
+        base.OnInitializedAsync();
+        var result = await  OwnerShipService.GetAll();
         foreach (var item in result)
         {
-            if (item.CategoryId == 1)
-                resultHome.Add(item);
+            if (item.categoryId == 1)
+                homeOwner.Add(item);
             else
-                resultArsa.Add(item);
+                ownerShips.Add(item);
         }
     }
 }

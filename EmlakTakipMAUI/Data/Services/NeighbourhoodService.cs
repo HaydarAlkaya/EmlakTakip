@@ -1,37 +1,63 @@
 ﻿using EmlakTakipMAUI.Model;
-using Newtonsoft.Json;
+using System.Text;
+using System.Text.Json;
 
 namespace EmlakTakipMAUI.Data;
 
-public class NeighbourhoodService : GenericService<Neighbourhood, List<Neighbourhood>>, INeighbourhoodService
+public class NeighbourhoodService : INeighbourhoodService
 {
+    private readonly HttpClient _httpClient;
+
+    public NeighbourhoodService(HttpClient httpClient)
+    {
+        _httpClient = httpClient;
+        _httpClient.BaseAddress = new Uri(URLList.BaseUrll);
+    }
+
     public async Task Add(Neighbourhood neighbourhood)
     {
-        var response = await SendRequest(URLList.NeighbourhoodAdd, HttpMethod.Post, neighbourhood);
+        var json = JsonSerializer.Serialize(neighbourhood);
+        var data = new StringContent(json, Encoding.UTF8, "application/json");
+
+        var response = await _httpClient.PostAsync(URLList.NeighbourhoodAdd, data);
+
+        response.EnsureSuccessStatusCode();
     }
 
     public async Task Delete(Neighbourhood neighbourhood)
     {
-        var response = await SendRequest(URLList.NeighbourhoodDelete + "/" + neighbourhood.Id, HttpMethod.Post, neighbourhood);
+        var response = await _httpClient.DeleteAsync($"{URLList.NeighbourhoodDelete}/{neighbourhood.id}");
+
+        response.EnsureSuccessStatusCode();
     }
 
     public async Task<List<Neighbourhood>> GetAll()
     {
-        // Tüm kategorileri getiren bir endpoint ve HTTP metodu kullanarak işlemi gerçekleştir
-        var response = await GetAllGeneric(URLList.NeighbourhoodGetAll);
-        // Dönen yanıtı doğrudan List<Neighbourhood> olarak döndürüyoruz
-        return JsonConvert.DeserializeObject<List<Neighbourhood>>(response.ToString());
+        var response = await _httpClient.GetAsync(URLList.NeighbourhoodGetAll);
+
+        response.EnsureSuccessStatusCode();
+
+        using var responseContent = await response.Content.ReadAsStreamAsync();
+        return await JsonSerializer.DeserializeAsync<List<Neighbourhood>>(responseContent);
     }
 
     public async Task<Neighbourhood> GetById(int id)
     {
-        var response = await SendRequest(URLList.NeighbourhoodGetById + "/" + id, HttpMethod.Get, default(Neighbourhood));
-        return JsonConvert.DeserializeObject<Neighbourhood>(response.ToString());
-    }
+        var response = await _httpClient.GetAsync($"{URLList.NeighbourhoodGetById}/{id}");
 
+        response.EnsureSuccessStatusCode();
+
+        using var responseContent = await response.Content.ReadAsStreamAsync();
+        return await JsonSerializer.DeserializeAsync<Neighbourhood>(responseContent);
+    }
 
     public async Task Update(Neighbourhood neighbourhood)
     {
-        var response = await SendRequest(URLList.NeighbourhoodUpdate, HttpMethod.Post, neighbourhood);
+        var json = JsonSerializer.Serialize(neighbourhood);
+        var data = new StringContent(json, Encoding.UTF8, "application/json");
+
+        var response = await _httpClient.PutAsync($"{URLList.NeighbourhoodUpdate}/{neighbourhood.id}", data);
+
+        response.EnsureSuccessStatusCode();
     }
 }

@@ -1,36 +1,63 @@
-﻿using EmlakTakipMAUI.Model;
-using Newtonsoft.Json;
+﻿using System.Text;
+using System.Text.Json;
+using EmlakTakipMAUI.Model;
 
 namespace EmlakTakipMAUI.Data;
 
-public class CityService :GenericService<City,List<City>>, ICityService
+public class CityService : ICityService
 {
-    public async Task Add(City t)
+    private readonly HttpClient _httpClient;
+
+    public CityService(HttpClient httpClient)
     {
-        var response = await SendRequest(URLList.CityAdd, HttpMethod.Post, t);
+        _httpClient = httpClient;
+        _httpClient.BaseAddress = new Uri(URLList.BaseUrll);
     }
 
-    public async Task Delete(City t)
+    public async Task Add(City city)
     {
-        var response = await SendRequest(URLList.CityDelete, HttpMethod.Post, t);
+        var json = JsonSerializer.Serialize(city);
+        var data = new StringContent(json, Encoding.UTF8, "application/json");
+
+        var response = await _httpClient.PostAsync(URLList.CityAdd, data);
+
+        response.EnsureSuccessStatusCode();
+    }
+
+    public async Task Delete(City city)
+    {
+        var response = await _httpClient.DeleteAsync($"{URLList.CityDelete}/{city.id}");
+
+        response.EnsureSuccessStatusCode();
     }
 
     public async Task<List<City>> GetAll()
     {
-        // Tüm kategorileri getiren bir endpoint ve HTTP metodu kullanarak işlemi gerçekleştir
-        var response = await GetAllGeneric(URLList.CityGetAll);
-        // Dönen yanıtı doğrudan List<Category> olarak döndürüyoruz
-        return JsonConvert.DeserializeObject<List<City>>(response.ToString());
+        var response = await _httpClient.GetAsync(URLList.CityGetAll);
+
+        response.EnsureSuccessStatusCode();
+
+        using var responseContent = await response.Content.ReadAsStreamAsync();
+        return await JsonSerializer.DeserializeAsync<List<City>>(responseContent);
     }
 
     public async Task<City> GetById(int id)
     {
-        var response = await SendRequest(URLList.CityGetById + "/" + id, HttpMethod.Get, default(City));
-        return JsonConvert.DeserializeObject<City>(response.ToString());
+        var response = await _httpClient.GetAsync($"{URLList.CityGetById}/{id}");
+
+        response.EnsureSuccessStatusCode();
+
+        using var responseContent = await response.Content.ReadAsStreamAsync();
+        return await JsonSerializer.DeserializeAsync<City>(responseContent);
     }
 
-    public async Task Update(City t)
+    public async Task Update(City city)
     {
-        var response = await SendRequest(URLList.CityUpdate, HttpMethod.Post, t);
+        var json = JsonSerializer.Serialize(city);
+        var data = new StringContent(json, Encoding.UTF8, "application/json");
+
+        var response = await _httpClient.PutAsync($"{URLList.CityUpdate}/{city.id}", data);
+
+        response.EnsureSuccessStatusCode();
     }
 }

@@ -10,7 +10,7 @@ namespace Entities.Concrete
         public int CityId { get; set; }
         public int TownId { get; set; }
         public int NeighbourhoodId { get; set; }
-        public float SquareFeet { get; set; }
+        public string SquareFeet { get; set; }
         public string? RoomCount { get; set; }
         public string? BathCount { get; set;}
         public string? BuildAge { get; set; }

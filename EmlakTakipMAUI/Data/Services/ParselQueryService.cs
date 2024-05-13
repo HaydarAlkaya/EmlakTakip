@@ -1,37 +1,63 @@
 ﻿using EmlakTakipMAUI.Model;
-using Newtonsoft.Json;
+using System.Text;
+using System.Text.Json;
 
 namespace EmlakTakipMAUI.Data;
 
-public class ParselQueryService : GenericService<ParselQuery, List<ParselQuery>>, IParselQueryService
+public class ParselQueryService : IParselQueryService
 {
+    private readonly HttpClient _httpClient;
+
+    public ParselQueryService(HttpClient httpClient)
+    {
+        _httpClient = httpClient;
+        _httpClient.BaseAddress = new Uri(URLList.BaseUrll);
+    }
+
     public async Task Add(ParselQuery parselQuery)
     {
-        var response = await SendRequest(URLList.ParselQueryAdd, HttpMethod.Post, parselQuery);
+        var json = JsonSerializer.Serialize(parselQuery);
+        var data = new StringContent(json, Encoding.UTF8, "application/json");
+
+        var response = await _httpClient.PostAsync(URLList.ParselQueryAdd, data);
+
+        response.EnsureSuccessStatusCode();
     }
 
     public async Task Delete(ParselQuery parselQuery)
     {
-        var response = await SendRequest(URLList.ParselQueryDelete + "/" + parselQuery.Id, HttpMethod.Post, parselQuery);
+        var response = await _httpClient.DeleteAsync($"{URLList.ParselQueryDelete}/{parselQuery.id}");
+
+        response.EnsureSuccessStatusCode();
     }
 
     public async Task<List<ParselQuery>> GetAll()
     {
-        // Tüm kategorileri getiren bir endpoint ve HTTP metodu kullanarak işlemi gerçekleştir
-        var response = await GetAllGeneric(URLList.ParselQueryGetAll);
-        // Dönen yanıtı doğrudan List<ParselQuery> olarak döndürüyoruz
-        return JsonConvert.DeserializeObject<List<ParselQuery>>(response.ToString());
+        var response = await _httpClient.GetAsync(URLList.ParselQueryGetAll);
+
+        response.EnsureSuccessStatusCode();
+
+        using var responseContent = await response.Content.ReadAsStreamAsync();
+        return await JsonSerializer.DeserializeAsync<List<ParselQuery>>(responseContent);
     }
 
     public async Task<ParselQuery> GetById(int id)
     {
-        var response = await SendRequest(URLList.ParselQueryGetById + "/" + id, HttpMethod.Get, default(ParselQuery));
-        return JsonConvert.DeserializeObject<ParselQuery>(response.ToString());
-    }
+        var response = await _httpClient.GetAsync($"{URLList.ParselQueryGetById}/{id}");
 
+        response.EnsureSuccessStatusCode();
+
+        using var responseContent = await response.Content.ReadAsStreamAsync();
+        return await JsonSerializer.DeserializeAsync<ParselQuery>(responseContent);
+    }
 
     public async Task Update(ParselQuery parselQuery)
     {
-        var response = await SendRequest(URLList.ParselQueryUpdate, HttpMethod.Post, parselQuery);
+        var json = JsonSerializer.Serialize(parselQuery);
+        var data = new StringContent(json, Encoding.UTF8, "application/json");
+
+        var response = await _httpClient.PutAsync($"{URLList.ParselQueryUpdate}/{parselQuery.id}", data);
+
+        response.EnsureSuccessStatusCode();
     }
 }

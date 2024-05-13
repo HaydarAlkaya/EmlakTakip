@@ -2,8 +2,8 @@
 
 public class ParselQuery
 {
-    public int Id { get; set; }
-    public int OwnerShipId { get; set; }
-    public string Locations { get; set; }
+    public int id { get; set; }
+    public int ownerShipId { get; set; }
+    public string locations { get; set; }
 }
 

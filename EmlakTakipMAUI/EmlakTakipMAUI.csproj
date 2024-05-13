@@ -45,6 +45,7 @@
         <GenerateTestArtifacts>True</GenerateTestArtifacts>
         <AppInstallerUri>C:\Users\alkay\OneDrive\Masaüstü\EmlakRelesa</AppInstallerUri>
         <HoursBetweenUpdateChecks>0</HoursBetweenUpdateChecks>
+        <DefaultLanguage>tr-tr</DefaultLanguage>
     </PropertyGroup>
 
     <ItemGroup>

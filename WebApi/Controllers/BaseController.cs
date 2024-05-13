@@ -24,7 +24,7 @@ namespace WebApi.Controllers
             var result = _baseService.GetAll();
             if (result.Success)
             {
-                return Ok(result);
+                return Ok(result.Data);
             }
             return BadRequest(result);
         }
@@ -34,7 +34,7 @@ namespace WebApi.Controllers
         {
             var result = _baseService.GetById(id);
             if (result.Success)
-                return Ok(result);
+                return Ok(result.Data);
 
             return BadRequest(result);
         }

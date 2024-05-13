@@ -1,38 +1,64 @@
 ﻿using EmlakTakipMAUI.Model;
-using Newtonsoft.Json;
+using System.Text;
+using System.Text.Json;
 
 namespace EmlakTakipMAUI.Data;
 
-public class CategoryService : GenericService<Category, List<Category>>, ICategoryService
+public class CategoryService : ICategoryService
 {
+    private readonly HttpClient _httpClient;
+
+    public CategoryService(HttpClient httpClient)
+    {
+        _httpClient = httpClient;
+        _httpClient.BaseAddress = new Uri(URLList.BaseUrll);
+    }
+
     public async Task Add(Category category)
     {
-        var response = await SendRequest(URLList.CategoryAdd, HttpMethod.Post, category);
+        var json = JsonSerializer.Serialize(category);
+        var data = new StringContent(json, Encoding.UTF8, "application/json");
+
+        var response = await _httpClient.PostAsync(URLList.CategoryAdd, data);
+
+        response.EnsureSuccessStatusCode();
     }
 
     public async Task Delete(Category category)
     {
-        var response = await SendRequest(URLList.CategoryDelete+"/"+category.Id, HttpMethod.Post, category);
+        var response = await _httpClient.DeleteAsync($"{URLList.CategoryDelete}/{category.id}");
+
+        response.EnsureSuccessStatusCode();
     }
 
     public async Task<List<Category>> GetAll()
     {
-        // Tüm kategorileri getiren bir endpoint ve HTTP metodu kullanarak işlemi gerçekleştir
-        var response = await GetAllGeneric(URLList.CategoryGetAll);
-        // Dönen yanıtı doğrudan List<Category> olarak döndürüyoruz
-        return JsonConvert.DeserializeObject<List<Category>>(response.ToString());
+        var response = await _httpClient.GetAsync(URLList.CategoryGetAll);
+
+        response.EnsureSuccessStatusCode();
+
+        using var responseContent = await response.Content.ReadAsStreamAsync();
+        return await JsonSerializer.DeserializeAsync<List<Category>>(responseContent);
     }
 
     public async Task<Category> GetById(int id)
     {
-        var response = await SendRequest(URLList.CategoryGetById + "/" + id, HttpMethod.Get, default(Category));
-        return JsonConvert.DeserializeObject<Category>(response.ToString());
-    }
+        var response = await _httpClient.GetAsync($"{URLList.CategoryGetById}/{id}");
 
+        response.EnsureSuccessStatusCode();
+
+        using var responseContent = await response.Content.ReadAsStreamAsync();
+        return await JsonSerializer.DeserializeAsync<Category>(responseContent);
+    }
 
     public async Task Update(Category category)
     {
-        var response = await SendRequest(URLList.CategoryUpdate, HttpMethod.Post, category);
+        var json = JsonSerializer.Serialize(category);
+        var data = new StringContent(json, Encoding.UTF8, "application/json");
+
+        var response = await _httpClient.PutAsync($"{URLList.CategoryUpdate}/{category.id}", data);
+
+        response.EnsureSuccessStatusCode();
     }
 }
 

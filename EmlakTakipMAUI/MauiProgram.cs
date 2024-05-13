@@ -17,9 +17,10 @@ namespace EmlakTakipMAUI
                 });
 
             builder.Services.AddMauiBlazorWebView();
+            builder.Services.AddSingleton(sp => new HttpClient());
 
 #if DEBUG
-    		builder.Services.AddBlazorWebViewDeveloperTools();
+            builder.Services.AddBlazorWebViewDeveloperTools();
     		builder.Logging.AddDebug();
 #endif
             builder.Services.AddSingleton<ICategoryService, CategoryService>();
@@ -28,6 +29,7 @@ namespace EmlakTakipMAUI
             builder.Services.AddSingleton<INeighbourhoodService, NeighbourhoodService>();
             builder.Services.AddSingleton<IOwnerShipService, OwnerShipService>();
             builder.Services.AddSingleton<ITownService, TownService>();
+           
             return builder.Build();
         }
     }

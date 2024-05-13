@@ -3,7 +3,7 @@
 public static class URLList
 {
     public static string BaseUrll = "https://localhost:44341/api/";
-
+    
     //Category
     public static string CategoryGetAll = "Category/GetAll";
     public static string CategoryGetById = "Category";

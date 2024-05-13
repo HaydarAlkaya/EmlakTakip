@@ -1,37 +1,63 @@
 ﻿using EmlakTakipMAUI.Model;
-using Newtonsoft.Json;
+using System.Text;
+using System.Text.Json;
 
 namespace EmlakTakipMAUI.Data.IServices;
 
-public class CustomerService : GenericService<Customer, List<Customer>>, ICustomerService
+public class CustomerService : ICustomerService
 {
+    private readonly HttpClient _httpClient;
+
+    public CustomerService(HttpClient httpClient)
+    {
+        _httpClient = httpClient;
+        _httpClient.BaseAddress = new Uri(URLList.BaseUrll);
+    }
+
     public async Task Add(Customer customer)
     {
-        var response = await SendRequest(URLList.CustomerAdd, HttpMethod.Post, customer);
+        var json = JsonSerializer.Serialize(customer);
+        var data = new StringContent(json, Encoding.UTF8, "application/json");
+
+        var response = await _httpClient.PostAsync(URLList.CustomerAdd, data);
+
+        response.EnsureSuccessStatusCode();
     }
 
     public async Task Delete(Customer customer)
     {
-        var response = await SendRequest(URLList.CustomerDelete + "/" + customer.Id, HttpMethod.Post, customer);
+        var response = await _httpClient.DeleteAsync($"{URLList.CustomerDelete}/{customer.id}");
+
+        response.EnsureSuccessStatusCode();
     }
 
     public async Task<List<Customer>> GetAll()
     {
-        // Tüm kategorileri getiren bir endpoint ve HTTP metodu kullanarak işlemi gerçekleştir
-        var response = await GetAllGeneric(URLList.CustomerGetAll);
-        // Dönen yanıtı doğrudan List<Customer> olarak döndürüyoruz
-        return JsonConvert.DeserializeObject<List<Customer>>(response.ToString());
+        var response = await _httpClient.GetAsync(URLList.CustomerGetAll);
+
+        response.EnsureSuccessStatusCode();
+
+        using var responseContent = await response.Content.ReadAsStreamAsync();
+        return await JsonSerializer.DeserializeAsync<List<Customer>>(responseContent);
     }
 
     public async Task<Customer> GetById(int id)
     {
-        var response = await SendRequest(URLList.CustomerGetById + "/" + id, HttpMethod.Get, default(Customer));
-        return JsonConvert.DeserializeObject<Customer>(response.ToString());
-    }
+        var response = await _httpClient.GetAsync($"{URLList.CustomerGetById}/{id}");
 
+        response.EnsureSuccessStatusCode();
+
+        using var responseContent = await response.Content.ReadAsStreamAsync();
+        return await JsonSerializer.DeserializeAsync<Customer>(responseContent);
+    }
 
     public async Task Update(Customer customer)
     {
-        var response = await SendRequest(URLList.CustomerUpdate, HttpMethod.Post, customer);
+        var json = JsonSerializer.Serialize(customer);
+        var data = new StringContent(json, Encoding.UTF8, "application/json");
+
+        var response = await _httpClient.PutAsync($"{URLList.CustomerUpdate}/{customer.id}", data);
+
+        response.EnsureSuccessStatusCode();
     }
 }

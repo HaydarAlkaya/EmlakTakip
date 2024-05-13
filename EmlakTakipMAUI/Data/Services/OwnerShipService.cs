@@ -1,37 +1,65 @@
 ﻿using EmlakTakipMAUI.Model;
-using Newtonsoft.Json;
+using System.Text;
+using System.Text.Json;
+
 
 namespace EmlakTakipMAUI.Data;
 
-public class OwnerShipService : GenericService<OwnerShip, List<OwnerShip>>, IOwnerShipService
+public class OwnerShipService : IOwnerShipService
 {
+    private readonly HttpClient _httpClient;
+
+    public OwnerShipService(HttpClient httpClient)
+    {
+        _httpClient = httpClient;
+        _httpClient.BaseAddress = new Uri(URLList.BaseUrll);
+    }
+
     public async Task Add(OwnerShip ownerShip)
     {
-        var response = await SendRequest(URLList.OwnerShipAdd, HttpMethod.Post, ownerShip);
+        var json = JsonSerializer.Serialize(ownerShip);
+        var data = new StringContent(json, Encoding.UTF8, "application/json");
+
+        var response = await _httpClient.PostAsync(URLList.OwnerShipAdd, data);
+
+        response.EnsureSuccessStatusCode();
     }
 
     public async Task Delete(OwnerShip ownerShip)
     {
-        var response = await SendRequest(URLList.OwnerShipDelete + "/" + ownerShip.Id, HttpMethod.Post, ownerShip);
+        var response = await _httpClient.DeleteAsync($"{URLList.OwnerShipDelete}/{ownerShip.id}");
+
+        response.EnsureSuccessStatusCode();
     }
 
     public async Task<List<OwnerShip>> GetAll()
     {
-        // Tüm kategorileri getiren bir endpoint ve HTTP metodu kullanarak işlemi gerçekleştir
-        var response = await GetAllGeneric(URLList.OwnerShipGetAll);
-        // Dönen yanıtı doğrudan List<OwnerShip> olarak döndürüyoruz
-        return JsonConvert.DeserializeObject<List<OwnerShip>>(response.ToString());
+        var response = await _httpClient.GetAsync(URLList.OwnerShipGetAll);
+
+        response.EnsureSuccessStatusCode();
+
+        using var responseContent = await response.Content.ReadAsStreamAsync();
+        return await JsonSerializer.DeserializeAsync<List<OwnerShip>>(responseContent);
     }
 
     public async Task<OwnerShip> GetById(int id)
     {
-        var response = await SendRequest(URLList.OwnerShipGetById + "/" + id, HttpMethod.Get, default(OwnerShip));
-        return JsonConvert.DeserializeObject<OwnerShip>(response.ToString());
-    }
+        var response = await _httpClient.GetAsync($"{URLList.OwnerShipGetById}/{id}");
 
+        response.EnsureSuccessStatusCode();
+
+        using var responseContent = await response.Content.ReadAsStreamAsync();
+        return await JsonSerializer.DeserializeAsync<OwnerShip>(responseContent);
+    }
 
     public async Task Update(OwnerShip ownerShip)
     {
-        var response = await SendRequest(URLList.OwnerShipUpdate, HttpMethod.Post, ownerShip);
+        var json = JsonSerializer.Serialize(ownerShip);
+        var data = new StringContent(json, Encoding.UTF8, "application/json");
+
+        var response = await _httpClient.PutAsync($"{URLList.OwnerShipUpdate}/{ownerShip.id}", data);
+
+        response.EnsureSuccessStatusCode();
     }
 }
+
