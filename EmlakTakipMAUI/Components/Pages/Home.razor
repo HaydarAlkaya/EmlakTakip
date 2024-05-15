@@ -2,43 +2,55 @@
 @using EmlakTakipMAUI.Data
 @using EmlakTakipMAUI.Model
 @inject IOwnerShipService OwnerShipService
+@inject IJSRuntime JSRuntime
 
 
+<h1>Emlak Portföyü</h1>
 
-@foreach (var item in ownerShips)
-{
-    <div class="container ">
+
+<div class="container">
+    @for (int i = 0; i < ownerShips.Count; i += 3)
+    {
         <div class="row">
-            <div class="col-md-4 mb-4">
-                <div class="card">
-                    <img src="images\favicon.png" class="card-img-top" alt=" " style="width:128px;height:128px;">
-                    <div class="card-body">
-                        <h5 class="card-title">@item.price</h5>
-                        <p class="card-text">This is a longer card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
-                        <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
+            @for (int j = i; j < i + 3 && j < ownerShips.Count; j++)
+            {
+                <div class="col">
+                    <div class="item">
+                        <h5 class="card-title">@ownerShips[j].title</h5>
+                        <p class="card-text">Detay: @ownerShips[j].contents</p>
+                        <p class="card-text">m² : @ownerShips[j].squareFeet</p>
+                        <p class="card-text">Oda Sayısı : @ownerShips[j].roomCount</p>
+                        <p clas="card-text">Banyo sayısı : @ownerShips[j].bathCount</p>
+                        <button @onclick="(() => Delete(ownerShips[j]))">Sil</button>
                     </div>
                 </div>
-            </div>
+            }
         </div>
-    </div>
-}
-@foreach (var item in homeOwner)
-{
-    <div class="container ">
+    }
+</div>
+
+<div class="container">
+    @for (int i = 0; i < homeOwner.Count; i += 3)
+    {
         <div class="row">
-            <div class="col-md-4 mb-4">
-                <div class="card">
-                    <img src="images\favicon.png" class="card-img-top" alt=" " style="width:128px;height:128px;">
-                    <div class="card-body">
-                        <h5 class="card-title">@item.price</h5>
-                        <p class="card-text">This is a longer card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
-                        <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
+            @for (int j = i; j < i + 3 && j < homeOwner.Count; j++)
+            {
+                <div class="col">
+                    <div class="item">
+                        <h5 class="card-title">@homeOwner[j].title</h5>
+                        <p class="card-text">Detay: @homeOwner[j].contents</p>
+                        <p class="card-text">m² : @homeOwner[j].squareFeet</p>
+                        <p class="card-text">Oda Sayısı : @homeOwner[j].roomCount</p>
+                        <p clas="card-text">Banyo sayısı : @homeOwner[j].bathCount</p>
+                        <button @onclick="(() => Delete(homeOwner[j-1]))">Sil</button>
                     </div>
                 </div>
-            </div>
+            }
         </div>
-    </div>
-}
+    }
+</div>
+
+
 @code {
     List<OwnerShip> ownerShips = new();
     List<OwnerShip> homeOwner = new();
@@ -46,7 +58,7 @@
     protected override async Task OnInitializedAsync()
     {
         base.OnInitializedAsync();
-        var result = await  OwnerShipService.GetAll();
+        var result = await OwnerShipService.GetAll();
         foreach (var item in result)
         {
             if (item.categoryId == 1)
@@ -57,3 +69,25 @@
     }
 }
 
+@code{
+    async void Delete(OwnerShip ownerShip){
+        await OwnerShipService.Delete(ownerShip);
+        await JSRuntime.InvokeVoidAsync("location.reload");
+    }
+}
+
+@code {
+    async void Add(OwnerShip ownerShip)
+    {
+        await OwnerShipService.Add(ownerShip);
+        await JSRuntime.InvokeVoidAsync("location.reload");
+    }
+}
+
+<style>
+    .item {
+        border: 4px solid #ccc; /* Çerçeve stilini tanımla */
+        padding: 10px; /* İçeriği çerçeveden uzaklaştır */
+        margin-bottom: 10px; /* Portföyler arasında boşluk bırak */
+    }
+</style>

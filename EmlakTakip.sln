@@ -16,7 +16,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebApi", "WebApi\WebApi.csp
 		{33B9BFDB-ED07-4D01-B420-6E66FA5E48D8} = {33B9BFDB-ED07-4D01-B420-6E66FA5E48D8}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmlakTakipMAUI", "EmlakTakipMAUI\EmlakTakipMAUI.csproj", "{08F5456C-01CD-4C34-8CA4-954A7F7F3905}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EmlakTakipMAUI", "EmlakTakipMAUI\EmlakTakipMAUI.csproj", "{08F5456C-01CD-4C34-8CA4-954A7F7F3905}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -27,7 +27,9 @@ public class OwnerShipService : IOwnerShipService
 
     public async Task Delete(OwnerShip ownerShip)
     {
-        var response = await _httpClient.DeleteAsync($"{URLList.OwnerShipDelete}/{ownerShip.id}");
+        var json = JsonSerializer.Serialize(ownerShip);
+        var data = new StringContent(json, Encoding.UTF8, "application/json");
+        var response = await _httpClient.PostAsync(URLList.OwnerShipDelete, data);
 
         response.EnsureSuccessStatusCode();
     }
@@ -57,7 +59,7 @@ public class OwnerShipService : IOwnerShipService
         var json = JsonSerializer.Serialize(ownerShip);
         var data = new StringContent(json, Encoding.UTF8, "application/json");
 
-        var response = await _httpClient.PutAsync($"{URLList.OwnerShipUpdate}/{ownerShip.id}", data);
+        var response = await _httpClient.PostAsync($"{URLList.OwnerShipUpdate}/{ownerShip.id}", data);
 
         response.EnsureSuccessStatusCode();
     }
