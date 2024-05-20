@@ -26,7 +26,10 @@ public class CategoryService : ICategoryService
 
     public async Task Delete(Category category)
     {
-        var response = await _httpClient.DeleteAsync($"{URLList.CategoryDelete}/{category.id}");
+        var json = JsonSerializer.Serialize(category);
+        var data = new StringContent(json, Encoding.UTF8, "application/json");
+
+        var response = await _httpClient.PostAsync(URLList.CategoryDelete, data);
 
         response.EnsureSuccessStatusCode();
     }

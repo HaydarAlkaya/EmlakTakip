@@ -26,7 +26,10 @@ public class NeighbourhoodService : INeighbourhoodService
 
     public async Task Delete(Neighbourhood neighbourhood)
     {
-        var response = await _httpClient.DeleteAsync($"{URLList.NeighbourhoodDelete}/{neighbourhood.id}");
+        var json = JsonSerializer.Serialize(neighbourhood);
+        var data = new StringContent(json, Encoding.UTF8, "application/json");
+
+        var response = await _httpClient.PostAsync(URLList.NeighbourhoodDelete, data);
 
         response.EnsureSuccessStatusCode();
     }

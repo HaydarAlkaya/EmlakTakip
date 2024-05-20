@@ -1,6 +1,6 @@
-﻿using System.Text;
+﻿using EmlakTakipMAUI.Model;
+using System.Text;
 using System.Text.Json;
-using EmlakTakipMAUI.Model;
 
 namespace EmlakTakipMAUI.Data;
 
@@ -26,7 +26,10 @@ public class CityService : ICityService
 
     public async Task Delete(City city)
     {
-        var response = await _httpClient.DeleteAsync($"{URLList.CityDelete}/{city.id}");
+        var json = JsonSerializer.Serialize(city);
+        var data = new StringContent(json, Encoding.UTF8, "application/json");
+
+        var response = await _httpClient.PostAsync(URLList.CityDelete, data);
 
         response.EnsureSuccessStatusCode();
     }
@@ -39,6 +42,7 @@ public class CityService : ICityService
 
         using var responseContent = await response.Content.ReadAsStreamAsync();
         return await JsonSerializer.DeserializeAsync<List<City>>(responseContent);
+
     }
 
     public async Task<City> GetById(int id)

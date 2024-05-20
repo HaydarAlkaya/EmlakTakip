@@ -2,7 +2,7 @@
 using System.Text;
 using System.Text.Json;
 
-namespace EmlakTakipMAUI.Data.IServices;
+namespace EmlakTakipMAUI.Data;
 
 public class CustomerService : ICustomerService
 {
@@ -26,7 +26,10 @@ public class CustomerService : ICustomerService
 
     public async Task Delete(Customer customer)
     {
-        var response = await _httpClient.DeleteAsync($"{URLList.CustomerDelete}/{customer.id}");
+        var json = JsonSerializer.Serialize(customer);
+        var data = new StringContent(json, Encoding.UTF8, "application/json");
+
+        var response = await _httpClient.PostAsync(URLList.CustomerDelete, data);
 
         response.EnsureSuccessStatusCode();
     }

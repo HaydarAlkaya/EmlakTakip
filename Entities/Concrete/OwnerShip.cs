@@ -24,5 +24,6 @@ namespace Entities.Concrete
         public int CustomerId { get; set; }
         public bool Status { get; set; }
         public int CategoryId { get; set; }
+        public DateTime CreatedDate { get; set; }
     }
 }

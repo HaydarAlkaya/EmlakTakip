@@ -26,7 +26,10 @@ public class TownService : ITownService
 
     public async Task Delete(Town town)
     {
-        var response = await _httpClient.DeleteAsync($"{URLList.TownDelete}/{town.id}");
+        var json = JsonSerializer.Serialize(town);
+        var data = new StringContent(json, Encoding.UTF8, "application/json");
+
+        var response = await _httpClient.PostAsync(URLList.TownDelete, data);
 
         response.EnsureSuccessStatusCode();
     }

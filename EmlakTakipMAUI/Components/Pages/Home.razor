@@ -3,25 +3,78 @@
 @using EmlakTakipMAUI.Model
 @inject IOwnerShipService OwnerShipService
 @inject IJSRuntime JSRuntime
+@inject ICityService cityService
+@inject ITownService townService
+@inject INeighbourhoodService neighbourhoodService
+@inject ICustomerService customerService
+@inject ICategoryService categoryService
+
 
 
 <h1>Emlak Portföyü</h1>
 
 
+<!-- Button trigger modal -->
+<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#ParselModal">
+    Parsel Ekle
+</button>
+
+<!-- Button trigger modal -->
+<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#HomeModal">
+    Ev Ekle
+</button>
+
 <div class="container">
-    @for (int i = 0; i < ownerShips.Count; i += 3)
+    @foreach (var ownerGroup in ownerShips.Select((owner, index) => new { owner, index }).GroupBy(x => x.index / 3))
     {
-        <div class="row">
-            @for (int j = i; j < i + 3 && j < ownerShips.Count; j++)
+        <div class="row mb-3">
+            @foreach (var ownerEntry in ownerGroup)
             {
-                <div class="col">
+                var owner = ownerEntry.owner;
+                <div class="col-md-4">
                     <div class="item">
-                        <h5 class="card-title">@ownerShips[j].title</h5>
-                        <p class="card-text">Detay: @ownerShips[j].contents</p>
-                        <p class="card-text">m² : @ownerShips[j].squareFeet</p>
-                        <p class="card-text">Oda Sayısı : @ownerShips[j].roomCount</p>
-                        <p clas="card-text">Banyo sayısı : @ownerShips[j].bathCount</p>
-                        <button @onclick="(() => Delete(ownerShips[j]))">Sil</button>
+                        <h5 class="card-title">@owner.title</h5>
+                        <p class="card-text">Detay: @owner.contents</p>
+                        <p class="card-text">m² : @owner.squareFeet</p>
+                        <p class="card-text">Ada No : @owner.ada</p>
+                        <p class="card-text">Parsel No : @owner.parsel</p>
+                        <p class="card-text">@RentorSale((bool)owner.rentOrSale).Result</p>
+                        <p class="card-text">Takas: @ExchangeType((bool)owner.rentOrSale, (bool)owner.exchange).Result</p>
+                        <p class="card-text">İl: @cities.FirstOrDefault(e => e.id == owner.cityId)?.name</p>
+                        <p class="card-text">İlçe: @towns.FirstOrDefault(e => e.id == owner.townId)?.name</p>
+                        <p class="card-text">Mahalle: @neighbourhoods.FirstOrDefault(e => e.id == owner.neighbourhoodId)?.name</p>
+                        <p class="card-text">Fiyat: @owner.price</p>
+                        <button @onclick="(() => Delete(owner))">Sil</button>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+
+    @foreach (var ownerGroup in homeOwner.Select((owner, index) => new { owner, index }).GroupBy(x => x.index / 3))
+    {
+        <div class="row mb-3">
+            @foreach (var ownerEntry in ownerGroup)
+            {
+                var owner = ownerEntry.owner;
+                <div class="col-md-4">
+                    <div class="item">
+                        <h1>Deneme İDsi :  @owner.id</h1>
+                        <h5 class="card-title">@owner.title</h5>
+                        <p class="card-text">Detay: @owner.contents</p>
+                        <p class="card-text">m² : @owner.squareFeet</p>
+                        <p class="card-text">Oda Sayısı : @owner.roomCount</p>
+                        <p class="card-text">Banyo sayısı : @owner.bathCount</p>
+                        <p class="card-text">Bina Yaşı: @owner.buildAge</p>
+                        <p class="card-text">Kat: @owner.floorLocation</p>
+                        <p class="card-text">Kat Sayısı: @owner.totalFloor</p>
+                        <p class="card-text">@RentorSale((bool)owner.rentOrSale).Result</p>
+                        <p class="card-text">Takas: @ExchangeType((bool)owner.rentOrSale, (bool)owner.exchange).Result</p>
+                        <p class="card-text">İl: @cities.FirstOrDefault(e => e.id == owner.cityId)?.name</p>
+                        <p class="card-text">İlçe: @towns.FirstOrDefault(e => e.id == owner.townId)?.name</p>
+                        <p class="card-text">Mahalle: @neighbourhoods.FirstOrDefault(e => e.id == owner.neighbourhoodId)?.name</p>
+                        <p class="card-text">Fiyat: @owner.price</p>
+                        <button @onclick="(() => Delete(owner))">Sil</button>
                     </div>
                 </div>
             }
@@ -29,32 +82,209 @@
     }
 </div>
 
-<div class="container">
-    @for (int i = 0; i < homeOwner.Count; i += 3)
-    {
-        <div class="row">
-            @for (int j = i; j < i + 3 && j < homeOwner.Count; j++)
-            {
-                <div class="col">
-                    <div class="item">
-                        <h5 class="card-title">@homeOwner[j].title</h5>
-                        <p class="card-text">Detay: @homeOwner[j].contents</p>
-                        <p class="card-text">m² : @homeOwner[j].squareFeet</p>
-                        <p class="card-text">Oda Sayısı : @homeOwner[j].roomCount</p>
-                        <p clas="card-text">Banyo sayısı : @homeOwner[j].bathCount</p>
-                        <button @onclick="(() => Delete(homeOwner[j-1]))">Sil</button>
+<!-- Modal Parsel -->
+<div class="modal fade" id="ParselModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Parsel Ekleme</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <input @bind="Title" class="form-control" type="text" placeholder="Başlık" aria-label="Title" />
+                <input @bind="Contents" class="form-control" type="text" placeholder="Açıklama" aria-label="Description">
+                <div class="input-row">
+                    <input @bind="SquareFeet" class="form-control" type="text" placeholder="Metre Kareyi Giriniz" aria-label="SquareFeet">
+                    <input @bind="Ada" class="form-control" type="text" placeholder="Ada Numarasını Giriniz" aria-label="Ada">
+                    <input @bind="Parsel" class="form-control" type="text" placeholder="Parsel Numarasını Giriniz" aria-label="Parsel">
+                </div>
+                <input @bind="Price" class="form-control" type="text" placeholder="Fiyat" aria-label="Price">
+                <div class="form-check mb-3">
+                    <div class="checkbox-wrapper">
+                        <input @onclick="@(()=>SetRentOrSale(true))" type="radio" class="form-check-input" id="SaleFormCheck2" name="rentOrSale" required>
+                        <label class="form-check-label" for="SaleFormCheck2">Satılık</label>
+                    </div>
+                    <div class="checkbox-wrapper">
+                        <input @onclick="@(()=>SetRentOrSale(false))" type="radio" class="form-check-input" id="SaleFormCheck3" name="rentOrSale" required>
+                        <label class="form-check-label" for="SaleFormCheck3">Kiralık</label>
+                        <div class="invalid-feedback">More example invalid feedback text</div>
+                    </div>
+
+                    <div class="checkbox-wrapper" style="margin-top: 10px;">
+                        <input @onclick="@(()=>Setexchangechecker(true))" type="radio" class="form-check-input" id="ExchangeFormCheck1" name="exchange" required>
+                        <label class="form-check-label" for="ExchangeFormCheck1">Takas Yapılır</label>
+                    </div>
+                    <div class="checkbox-wrapper">
+                        <input @onclick="@(()=>Setexchangechecker(false))" type="radio" class="form-check-input" id="ExchangeFormCheck2" name="exchange" required>
+                        <label class="form-check-label" for="ExchangeFormCheck2">Takas Yapılamaz</label>
+                        <div class="invalid-feedback">More example invalid feedback text</div>
                     </div>
                 </div>
-            }
+
+                <div class="containerr">
+                    <div class="form-group">
+                        <select @bind="CityId" class="form-select" id="SelectedCity" required>
+                            <option selected disabled value="0">İl Seçiniz</option>
+                            @foreach (var item in cities)
+                            {
+                                <option value="@item.id">@item.name</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <select @bind="TownId" class="form-select" id="SelectedTown" required>
+                            <option selected disabled value="0">İlçe Seçiniz</option>
+                            @foreach (var item in towns)
+                            {
+                                <option value="@item.id">@item.name</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <select @bind="NeighbourhoodId" class="form-select" id="SelectedNeighbourhood" required>
+                            <option selected disabled value="0">Mahalle Seçiniz</option>
+                            @foreach (var item in neighbourhoods)
+                            {
+                                <option value="@item.id">@item.name</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <select @bind="CategoryId" class="form-select" id="SelectedTown" required>
+                            <option selected disabled value="0">Kategori Seçiniz</option>
+                            @foreach (var item in categories)
+                            {
+                                <option value="@item.id">@item.name</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <select @bind="CustomerId" class="form-select" id="SelectedNeighbourhood" required>
+                        <option selected disabled value="0">Mülk Sahibini Seçiniz</option>
+                        @foreach (var item in customers)
+                        {
+                            <option value="@item.id">@item.name  @item.lastName     @item.phoneNumber</option>
+                        }
+                    </select>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" @onclick="SaveChanges">Save changes</button>
+                </div>
+            </div>
         </div>
-    }
+    </div>
 </div>
 
+
+<!-- Modal Ev -->
+<div class="modal fade" id="HomeModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Ev Ekleme</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <input @bind="Title" class="form-control" type="text" placeholder="Başlık" />
+                <input @bind="Contents" class="form-control" type="text" placeholder="Açıklama">
+                <div class="input-row">
+                    <input @bind="SquareFeet" class="form-control" type="text" placeholder="Metre Kareyi Giriniz">
+                    <input @bind="RoomCount" class="form-control" type="text" placeholder="Oda Sayısını Giriniz">
+                    <input @bind="BathCount" class="form-control" type="text" placeholder="Banyo Sayısını Giriniz">
+                    <input @bind="BuildAge" class="form-control" type="text" placeholder="Bina Yaşını Giriniz">
+                    <input @bind="FloorLocation" class="form-control" type="text" placeholder="Bulunduğu Katı Giriniz">
+                    <input @bind="TotalFloor" class="form-control" type="text" placeholder="Toplam Kat Sayısını Giriniz">
+                </div>
+                <input @bind="Price" class="form-control" type="text" placeholder="Fiyat">
+
+                <div class="form-check mb-3">
+                    <div class="checkbox-wrapper">
+                        <input @onclick="@(()=>SetRentOrSale(true))" type="radio" class="form-check-input" id="SaleFormCheck2" name="rentOrSale" required>
+                        <label class="form-check-label" for="SaleFormCheck2">Satılık</label>
+                    </div>
+                    <div class="checkbox-wrapper">
+                        <input @onclick="@(()=>SetRentOrSale(false))" type="radio" class="form-check-input" id="SaleFormCheck3" name="rentOrSale" required>
+                        <label class="form-check-label" for="SaleFormCheck3">Kiralık</label>
+                        <div class="invalid-feedback">More example invalid feedback text</div>
+                    </div>
+
+                    <div class="checkbox-wrapper" style="margin-top: 10px;">
+                        <input @onclick="@(()=>Setexchangechecker(true))" type="radio" class="form-check-input" id="ExchangeFormCheck1" name="exchange" required>
+                        <label class="form-check-label" for="ExchangeFormCheck1">Takas Yapılır</label>
+                    </div>
+                    <div class="checkbox-wrapper">
+                        <input @onclick="@(()=>Setexchangechecker(false))" type="radio" class="form-check-input" id="ExchangeFormCheck2" name="exchange" required>
+                        <label class="form-check-label" for="ExchangeFormCheck2">Takas Yapılamaz</label>
+                        <div class="invalid-feedback">More example invalid feedback text</div>
+                    </div>
+                </div>
+
+                <div class="containerr">
+                    <div class="form-group">
+                        <select @bind="CityId" class="form-select" id="SelectedCity" required>
+                            <option selected disabled value="0">İl Seçiniz</option>
+                            @foreach (var item in cities)
+                            {
+                                <option value="@item.id">@item.name</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <select @bind="TownId" class="form-select" id="SelectedTown" required>
+                            <option selected disabled value="0">İlçe Seçiniz</option>
+                            @foreach (var item in towns)
+                            {
+                                <option value="@item.id">@item.name</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <select @bind="NeighbourhoodId" class="form-select" id="SelectedNeighbourhood" required>
+                            <option selected disabled value="0">Mahalle Seçiniz</option>
+                            @foreach (var item in neighbourhoods)
+                            {
+                                <option value="@item.id">@item.name</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <select @bind="CategoryId" class="form-select" id="SelectedTown" required>
+                            <option selected disabled value="0">Kategori Seçiniz</option>
+                            @foreach (var item in categories)
+                            {
+                                <option value="@item.id">@item.name</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <select @bind="CustomerId" class="form-select" id="SelectedNeighbourhood" required>
+                        <option selected disabled value="0">Mülk Sahibini Seçiniz</option>
+                        @foreach (var item in customers)
+                        {
+                            <option value="@item.id">@item.name  @item.lastName     @item.phoneNumber</option>
+                        }
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" @onclick="SaveChanges">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 @code {
     List<OwnerShip> ownerShips = new();
     List<OwnerShip> homeOwner = new();
-
+    List<Town> towns = new();
+    List<City> cities = new();
+    List<Neighbourhood> neighbourhoods = new();
+    List<Customer> customers = new();
+    List<Category> categories = new();
     protected override async Task OnInitializedAsync()
     {
         base.OnInitializedAsync();
@@ -66,28 +296,215 @@
             else
                 ownerShips.Add(item);
         }
-    }
-}
+        var townsresult = await townService.GetAll();
+        foreach (var townitem in townsresult)
+        {
+            towns.Add(townitem);
+        }
 
-@code{
-    async void Delete(OwnerShip ownerShip){
+        var citiesresult = await cityService.GetAll();
+        foreach (var cityitem in citiesresult)
+        {
+            cities.Add(cityitem);
+        }
+
+        var neighbourhoodsresult = await neighbourhoodService.GetAll();
+        foreach (var neighbourhoodsitem in neighbourhoodsresult)
+        {
+            neighbourhoods.Add(neighbourhoodsitem);
+        }
+
+        var customersresult = await customerService.GetAll();
+        foreach (var customeritem in customersresult)
+        {
+            customers.Add(customeritem);
+        }
+
+        var categoryResult = await categoryService.GetAll();
+        foreach (var categoryitem in categoryResult)
+        {
+            categories.Add(categoryitem);
+        }
+    }
+    }
+
+        @code {
+    async void Delete(OwnerShip ownerShip)
+    {
         await OwnerShipService.Delete(ownerShip);
         await JSRuntime.InvokeVoidAsync("location.reload");
     }
-}
+    }
 
-@code {
-    async void Add(OwnerShip ownerShip)
+        @code {
+
+    private string Title;
+    private string Contents;
+    private int CityId;
+    private int TownId;
+    private int NeighbourhoodId;
+    private string SquareFeet;
+    private string? RoomCount;
+    private string? BathCount;
+    private string? BuildAge;
+    private bool? RentOrSale;
+    private string? FloorLocation;
+    private string? TotalFloor;
+    private bool? Exchange;
+    private string? Ada;
+    private string? Parsel;
+    private string Price;
+    private int CustomerId;
+    private bool Status;
+    private int CategoryId;
+    private void SetRentOrSale(bool rentorsalechecked)
     {
-        await OwnerShipService.Add(ownerShip);
+        if (rentorsalechecked == true)
+        {
+            Exchange = true;
+        }
+        else if (rentorsalechecked == false)
+        {
+            Exchange = false;
+        }
+    }
+
+    private void Setexchangechecker(bool rentorsalechecked)
+    {
+        if (rentorsalechecked == true)
+        {
+            RentOrSale = true;
+        }
+        else if (rentorsalechecked == false)
+        {
+            RentOrSale = false;
+        }
+    }
+
+    void getcity()
+    {
+
+    }
+
+    private async Task SaveChanges()
+    {
+
+
+        await OwnerShipService.Add(new OwnerShip
+            {
+                title = Title,
+                contents = Contents,
+                cityId = CityId,
+                townId = TownId,
+                neighbourhoodId = NeighbourhoodId,
+                squareFeet = SquareFeet,
+                roomCount = RoomCount,
+                bathCount = BathCount,
+                buildAge = BuildAge,
+                rentOrSale = RentOrSale,
+                floorLocation = FloorLocation,
+                totalFloor = TotalFloor,
+                exchange = Exchange,
+                ada = Ada,
+                parsel = Parsel,
+                price = Price,
+                customerId = CustomerId,
+                status = true,
+                categoryId = CategoryId
+
+            });
         await JSRuntime.InvokeVoidAsync("location.reload");
     }
-}
+    }
+
+        @code {
+
+    async Task<string> RentorSale(bool value)
+    {
+        if (value)
+        {
+            return "Kiralık";
+        }
+        return "Satılık";
+    }
+
+    async Task<string> ExchangeType(bool rent, bool exc)
+    {
+        if (rent == false)
+        {
+            if (exc)
+            {
+                return "Takasa Açık";
+            }
+            return "Takasa kapalı";
+        }
+        return "Kiralık olduğu için satışa kapalı.";
+    }
+
+    Customer customer = new();
+    async Task GetCustomerInfo(int id)
+    {
+        var customerr = await customerService.GetById(id);
+        customer = customerr;
+    }
+    }
 
 <style>
+
     .item {
         border: 4px solid #ccc; /* Çerçeve stilini tanımla */
         padding: 10px; /* İçeriği çerçeveden uzaklaştır */
         margin-bottom: 10px; /* Portföyler arasında boşluk bırak */
+    }
+
+    .container {
+        padding-top: 20px; /* Yukarıdan boşluk ekler */
+        padding-bottom: 20px; /* Aşağıdan boşluk ekler */
+        gap: 10px; /* Öğeler arasındaki boşluk */
+    }
+
+    .containerr {
+        display: flex;
+        gap: 10px; /* Öğeler arasındaki boşluk */
+    }
+
+    .checkbox-wrapper {
+        display: inline-block;
+        margin-right: 45px; /* İki checkbox arasındaki boşluk */
+    }
+
+    .form-select {
+        flex: 1; /* Eşit şekilde yayılmasını sağlar */
+    }
+
+    .modal-body {
+        display: flex;
+        flex-direction: column;
+        gap: 10px; /* Inputlar ve container arasında boşluk */
+    }
+
+    .modal-dialog {
+        max-width: 800px; /* Modal genişliğini ayarlar */
+    }
+
+    .input-row {
+        display: flex;
+        gap: 10px; /* Aralarındaki boşluğu ayarlar */
+        flex-wrap: wrap; /* İçerik sığmazsa alt satıra geçmeyi sağlar */
+    }
+
+        .input-row .form-control {
+            flex: 1; /* Eşit şekilde yayılmasını sağlar */
+            min-width: 150px; /* Minimum genişlik */
+        }
+
+    .modal-body {
+        display: flex;
+        flex-direction: column;
+        gap: 10px; /* Inputlar ve container arasında boşluk */
+    }
+
+    .modal-dialog {
+        max-width: 800px; /* Modal genişliğini ayarlar */
     }
 </style>

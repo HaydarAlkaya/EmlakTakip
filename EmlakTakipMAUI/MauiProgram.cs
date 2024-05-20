@@ -1,5 +1,4 @@
 ﻿using EmlakTakipMAUI.Data;
-using EmlakTakipMAUI.Data.IServices;
 using Microsoft.Extensions.Logging;
 
 namespace EmlakTakipMAUI

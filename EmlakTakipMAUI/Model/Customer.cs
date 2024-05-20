@@ -6,6 +6,6 @@ public class Customer
     public string name { get; set; }
     public string lastName { get; set; }
     public string phoneNumber { get; set; }
-    public string description { get; set; }
+    public string descriptions { get; set; }
 
 }

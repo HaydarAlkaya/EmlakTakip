@@ -1,16 +1,169 @@
 ﻿@page "/counter"
+@using EmlakTakipMAUI.Data
+@using EmlakTakipMAUI.Model
+@inject ICustomerService customerService
+@inject IJSRuntime JSRuntime
 
-<h1>Counter</h1>
+<h1>Müşteri Paneli</h1>
+<!-- Button trigger modal -->
+<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#ParselModal">
+    Müşteri Ekle
+</button>
 
-<p role="status">Current count: @currentCount</p>
+<div class="container">
+    @foreach (var customerGroup in customers.Select((customer, index) => new { customer, index }).GroupBy(x => x.index / 3))
+    {
+        <div class="row mb-3">
+            @foreach (var customerEntry in customerGroup)
+            {
+                var customer = customerEntry.customer;
+                <div class="col-md-4">
+                    <div class="item">
+                        <h5 class="card-title">@customer.name @customer.lastName</h5>
+                        <p class="card-text">Detay: @customer.phoneNumber</p>
+                        <p class="card-text">Açıklama : @customer.descriptions</p>
+                        <button @onclick="(() => Delete(customer))">Sil</button>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
 
-<button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
+
+<div class="modal fade" id="ParselModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Müşteri Ekleme</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col">
+                        <input @bind="Name" type="text" class="form-control" placeholder="İsim" aria-label="First name">
+                    </div>
+                    <div class="col">
+                        <input @bind="LastName" type="text" class="form-control" placeholder="Soyadı" aria-label="Last name">
+                    </div>
+                    <div class="col">
+                        <input @bind="PhoneNumber" type="text" class="form-control" placeholder="Phone Number" aria-label="Phone Number">
+                    </div>
+                </div>
+                <div class="form-floating">
+                    <textarea @bind="Description" class="form-control" placeholder="Leave a comment here" id="floatingTextarea2" style="height: 100px"></textarea>
+                    <label for="floatingTextarea2">Açıklama</label>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" @onclick="SaveChanges">Save changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 @code {
-    private int currentCount = 0;
 
-    private void IncrementCount()
+    private string Name;
+    private string LastName;
+    private string PhoneNumber;
+    private string Description;
+
+    private async Task SaveChanges()
     {
-        currentCount++;
+        await customerService.Add(new Customer
+            {
+                name = Name,
+                lastName = LastName,
+                phoneNumber = PhoneNumber,
+                descriptions = Description
+
+            });
+        await JSRuntime.InvokeVoidAsync("location.reload");
     }
 }
+
+
+@code {
+    List<Customer> customers = new();
+    protected override async Task OnInitializedAsync()
+    {
+        base.OnInitializedAsync();
+
+        var customersresult = await customerService.GetAll();
+        foreach (var customeritem in customersresult)
+        {
+            customers.Add(customeritem);
+        }
+    }
+}
+
+@code {
+    async void Delete(Customer customer)
+    {
+        await customerService.Delete(customer);
+        await JSRuntime.InvokeVoidAsync("location.reload");
+    }
+}
+
+<style>
+
+    .item {
+        border: 4px solid #ccc; /* Çerçeve stilini tanımla */
+        padding: 10px; /* İçeriği çerçeveden uzaklaştır */
+        margin-bottom: 10px; /* Portföyler arasında boşluk bırak */
+    }
+
+    .container {
+        padding-top: 20px; /* Yukarıdan boşluk ekler */
+        padding-bottom: 20px; /* Aşağıdan boşluk ekler */
+        gap: 15px; /* Öğeler arasındaki boşluk */
+    }
+
+    .containerr {
+        display: flex;
+        gap: 10px; /* Öğeler arasındaki boşluk */
+    }
+
+    .checkbox-wrapper {
+        display: inline-block;
+        margin-right: 45px; /* İki checkbox arasındaki boşluk */
+    }
+
+    .form-select {
+        flex: 1; /* Eşit şekilde yayılmasını sağlar */
+    }
+
+    .modal-body {
+        display: flex;
+        flex-direction: column;
+        gap: 10px; /* Inputlar ve container arasında boşluk */
+    }
+
+    .modal-dialog {
+        max-width: 800px; /* Modal genişliğini ayarlar */
+    }
+
+    .input-row {
+        display: flex;
+        gap: 10px; /* Aralarındaki boşluğu ayarlar */
+        flex-wrap: wrap; /* İçerik sığmazsa alt satıra geçmeyi sağlar */
+    }
+
+        .input-row .form-control {
+            flex: 1; /* Eşit şekilde yayılmasını sağlar */
+            min-width: 150px; /* Minimum genişlik */
+        }
+
+    .modal-body {
+        display: flex;
+        flex-direction: column;
+        gap: 10px; /* Inputlar ve container arasında boşluk */
+    }
+
+    .modal-dialog {
+        max-width: 800px; /* Modal genişliğini ayarlar */
+    }
+</style>

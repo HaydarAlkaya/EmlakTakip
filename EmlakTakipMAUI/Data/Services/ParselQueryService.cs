@@ -26,7 +26,10 @@ public class ParselQueryService : IParselQueryService
 
     public async Task Delete(ParselQuery parselQuery)
     {
-        var response = await _httpClient.DeleteAsync($"{URLList.ParselQueryDelete}/{parselQuery.id}");
+        var json = JsonSerializer.Serialize(parselQuery);
+        var data = new StringContent(json, Encoding.UTF8, "application/json");
+
+        var response = await _httpClient.PostAsync(URLList.ParselQueryDelete, data);
 
         response.EnsureSuccessStatusCode();
     }
