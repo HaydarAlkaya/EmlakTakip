@@ -9,7 +9,7 @@ namespace DataAccess.Concrete.EntityFreamwork
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             //@"Data Source=BRAINSTROME;Initial Catalog=Recorto;Integrated Security=True;Trust Server Certificate=True"
-            optionsBuilder.UseSqlServer(@"Data Source=BRAINSTROME;Initial Catalog=EmlakTakip;Integrated Security=True;Trust Server Certificate=True");
+            optionsBuilder.UseSqlServer(@"Data Source=.;Initial Catalog=EmlakTakip;Integrated Security=True;Trust Server Certificate=True");
         }
 
         public DbSet<OperationClaim> OperationClaims { get; set; }
