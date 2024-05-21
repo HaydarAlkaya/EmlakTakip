@@ -31,7 +31,7 @@
                 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#CategoryModal">
                     Kategori Ekle
                 </button>
-                <button @onclick="(() => DeleteCategory(categories.FirstOrDefault(e => e.id == CategoryId)))" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#CityModal">
+                <button @onclick="(() => DeleteCategory(categories.FirstOrDefault(e => e.id == CategoryId)))" type="button" class="btn btn-primary">
                     Sil
                 </button>
             </div>
@@ -56,7 +56,7 @@
                 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#CityModal">
                     Şehir Ekle
                 </button>
-                <button @onclick="(() => DeleteCity(cities.FirstOrDefault(e => e.id == CityId)))" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#CityModal">
+                <button @onclick="(() => DeleteCity(cities.FirstOrDefault(e => e.id == CityId)))" type="button" class="btn btn-primary">
                     Sil
                 </button>
             </div>
@@ -81,7 +81,7 @@
                 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#TownModal">
                     İlçe Ekle
                 </button>
-                <button @onclick="(() => DeleteTown(towns.FirstOrDefault(e => e.id == TownId)))" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#CityModal">
+                <button @onclick="(() => DeleteTown(towns.FirstOrDefault(e => e.id == TownId)))" type="button" class="btn btn-primary">
                     Sil
                 </button>
             </div>
@@ -106,7 +106,7 @@
                 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#NeighbourhoodModal">
                     Mahalle Ekle
                 </button>
-                <button @onclick="(() => DeleteNeighbourhood(neighbourhoods.FirstOrDefault(e => e.id == NeighbourhoodId)))" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#CityModal">
+                <button @onclick="(() => DeleteNeighbourhood(neighbourhoods.FirstOrDefault(e => e.id == NeighbourhoodId)))" type="button" class="btn btn-primary">
                     Sil
                 </button>
             </div>

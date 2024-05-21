@@ -48,7 +48,7 @@
                         <p class="card-text">İlçe: @towns.FirstOrDefault(e => e.id == ownerEntry.owner.townId)?.name</p>
                         <p class="card-text">Mahalle: @neighbourhoods.FirstOrDefault(e => e.id == ownerEntry.owner.neighbourhoodId)?.name</p>
                         <p class="card-text">Fiyat: @ownerEntry.owner.price</p>
-                        <button @onclick="(() => Delete(ownerEntry.owner))">Sil</button>
+                        <button @onclick="(() => Delete(ownerEntry.owner))" type="button" class="btn btn-primary">Sil</button>
                     </div>
                 </div>
 
@@ -81,10 +81,9 @@
                         <p class="card-text">İlçe: @towns.FirstOrDefault(e => e.id == ownerEntry.owner.townId)?.name</p>
                         <p class="card-text">Mahalle: @neighbourhoods.FirstOrDefault(e => e.id == ownerEntry.owner.neighbourhoodId)?.name</p>
                         <p class="card-text">Fiyat: @ownerEntry.owner.price</p>
-                        <button @onclick="(() => Delete(ownerEntry.owner))">Sil</button>
+                        <button @onclick="(() => Delete(ownerEntry.owner))" type="button" class="btn btn-primary">Sil</button>
                     </div>
                 </div>
-
             </div>
         }
     }
@@ -349,7 +348,7 @@
     }
 }
 
-        @code {
+@code {
 
     private string Title;
     private string Contents;
@@ -430,7 +429,7 @@
     }
     }
 
-        @code {
+@code {
 
     async Task<string> RentorSale(bool value)
     {

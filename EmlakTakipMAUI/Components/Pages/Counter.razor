@@ -10,26 +10,78 @@
     Müşteri Ekle
 </button>
 
-<div class="container">
+<div class="row row-cols-1 row-cols-md-3 g-4">
     @foreach (var customerGroup in customers.Select((customer, index) => new { customer, index }).GroupBy(x => x.index / 3))
     {
-        <div class="row mb-3">
-            @foreach (var customerEntry in customerGroup)
-            {
-                var customer = customerEntry.customer;
-                <div class="col-md-4">
-                    <div class="item">
-                        <h5 class="card-title">@customer.name @customer.lastName</h5>
-                        <p class="card-text">Telefon: @customer.phoneNumber</p>
-                        <p class="card-text">Açıklama : @customer.descriptions</p>
-                        <button @onclick="(() => Delete(customer))">Sil</button>
-                    </div>
+        int i = 0;
+        @foreach (var customerEntry in customerGroup)
+        {
+            i++;
+            string imageurll = "https://mdbcdn.b-cdn.net/img/new/standard/city/04" + i + ".webp";
+            var customer = customerEntry.customer;
+            <div class="card">
+                <img src=@imageurll class="card-img-top" alt="Hollywood Sign on The Hill" />
+                <div class="card-body">
+                    <h4 class="card-title">@customer.name @customer.lastName</h4>
+                    <h6 class="card-title">@customer.phoneNumber</h6>
+                    <p class="card-text">
+                        @customer.descriptions
+                    </p>
                 </div>
-            }
-        </div>
+                <button @onclick="(() => Delete(customer))" type="button" class="btn btn-primary">Sil</button>
+            </div>
+        }
     }
 </div>
-
+@*  var customer = customerEntry.customer;
+<div class="col-md-4">
+    <div class="item">
+        <h5 class="card-title">@customer.name @customer.lastName</h5>
+        <p class="card-text">Telefon: @customer.phoneNumber</p>
+        <p class="card-text">Açıklama : @customer.descriptions</p>
+        <button @onclick="(() => Delete(customer))">Sil</button>
+    </div>
+</div> *@
+@* <div class="card-group">
+    <div class="card">
+        <img src="https://mdbcdn.b-cdn.net/img/new/standard/city/041.webp" class="card-img-top" alt="Hollywood Sign on The Hill" />
+        <div class="card-body">
+            <h5 class="card-title">Card title</h5>
+            <p class="card-text">
+                This is a wider card with supporting text below as a natural lead-in to
+                additional content. This content is a little bit longer.
+            </p>
+        </div>
+        <div class="card-footer">
+            <small class="text-muted">Last updated 3 mins ago</small>
+        </div>
+    </div>
+    <div class="card">
+        <img src="https://mdbcdn.b-cdn.net/img/new/standard/city/042.webp" class="card-img-top" alt="Palm Springs Road" />
+        <div class="card-body">
+            <h5 class="card-title">Card title</h5>
+            <p class="card-text">This card has supporting text below as a natural lead-in to additional content.</p>
+        </div>
+        <div class="card-footer">
+            <small class="text-muted">Last updated 3 mins ago</small>
+        </div>
+    </div>
+    <div class="card">
+        <img src="https://mdbcdn.b-cdn.net/img/new/standard/city/043.webp" class="card-img-top" alt="Los Angeles Skyscrapers" />
+        <div class="card-body">
+            <h5 class="card-title">Card title</h5>
+            <p class="card-text">
+                This is a wider card with supporting text below as a natural lead-in to
+                additional content. This card has even longer content than the first to show
+                that equal height action.
+            </p>
+        </div>
+        <div class="card-footer">
+            <small class="text-muted">Last updated 3 mins ago</small>
+        </div>
+    </div>
+</div>
+ *@
 
 <div class="modal fade" id="ParselModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
