@@ -24,63 +24,72 @@
     Ev Ekle
 </button>
 
-<div class="container">
+
+<div class="row row-cols-1 row-cols-md-3 g-4">
     @foreach (var ownerGroup in ownerShips.Select((owner, index) => new { owner, index }).GroupBy(x => x.index / 3))
     {
-        <div class="row mb-3">
-            @foreach (var ownerEntry in ownerGroup)
-            {
-                var owner = ownerEntry.owner;
-                <div class="col-md-4">
-                    <div class="item">
-                        <h5 class="card-title">@owner.title</h5>
-                        <p class="card-text">Detay: @owner.contents</p>
-                        <p class="card-text">m² : @owner.squareFeet</p>
-                        <p class="card-text">Ada No : @owner.ada</p>
-                        <p class="card-text">Parsel No : @owner.parsel</p>
-                        <p class="card-text">@RentorSale((bool)owner.rentOrSale).Result</p>
-                        <p class="card-text">Takas: @ExchangeType((bool)owner.rentOrSale, (bool)owner.exchange).Result</p>
-                        <p class="card-text">İl: @cities.FirstOrDefault(e => e.id == owner.cityId)?.name</p>
-                        <p class="card-text">İlçe: @towns.FirstOrDefault(e => e.id == owner.townId)?.name</p>
-                        <p class="card-text">Mahalle: @neighbourhoods.FirstOrDefault(e => e.id == owner.neighbourhoodId)?.name</p>
-                        <p class="card-text">Fiyat: @owner.price</p>
-                        <button @onclick="(() => Delete(owner))">Sil</button>
+        int i = 0;
+        @foreach (var ownerEntry in ownerGroup)
+        {
+            i++;
+            string imageurll = "https://mdbcdn.b-cdn.net/img/new/standard/city/04" + i + ".webp";
+            <div class="col">
+                <div class="card h-100">
+                    <img src=@imageurll class="card-img-top" alt="Hollywood Sign on The Hill" />
+                    <div class="card-body">
+                        <h2 class="card-title">@ownerEntry.owner.title</h2>
+                        <h5 class="card-text">Detay: @ownerEntry.owner.contents</h5>
+                        <p class="card-text">m² : @ownerEntry.owner.squareFeet</p>
+                        <p class="card-text">Ada No : @ownerEntry.owner.ada</p>
+                        <p class="card-text">Parsel No : @ownerEntry.owner.parsel</p>
+                        <p class="card-text">@RentorSale((bool)ownerEntry.owner.rentOrSale).Result</p>
+                        <p class="card-text">Takas: @ExchangeType((bool)ownerEntry.owner.rentOrSale, (bool)ownerEntry.owner.exchange).Result</p>
+                        <p class="card-text">İl: @cities.FirstOrDefault(e => e.id == ownerEntry.owner.cityId)?.name</p>
+                        <p class="card-text">İlçe: @towns.FirstOrDefault(e => e.id == ownerEntry.owner.townId)?.name</p>
+                        <p class="card-text">Mahalle: @neighbourhoods.FirstOrDefault(e => e.id == ownerEntry.owner.neighbourhoodId)?.name</p>
+                        <p class="card-text">Fiyat: @ownerEntry.owner.price</p>
+                        <button @onclick="(() => Delete(ownerEntry.owner))">Sil</button>
                     </div>
                 </div>
-            }
-        </div>
+
+            </div>
+        }
     }
 
     @foreach (var ownerGroup in homeOwner.Select((owner, index) => new { owner, index }).GroupBy(x => x.index / 3))
     {
-        <div class="row mb-3">
-            @foreach (var ownerEntry in ownerGroup)
-            {
-                var owner = ownerEntry.owner;
-                <div class="col-md-4">
-                    <div class="item">
-                        <h1>Deneme İDsi :  @owner.id</h1>
-                        <h5 class="card-title">@owner.title</h5>
-                        <p class="card-text">Detay: @owner.contents</p>
-                        <p class="card-text">m² : @owner.squareFeet</p>
-                        <p class="card-text">Oda Sayısı : @owner.roomCount</p>
-                        <p class="card-text">Banyo sayısı : @owner.bathCount</p>
-                        <p class="card-text">Bina Yaşı: @owner.buildAge</p>
-                        <p class="card-text">Kat: @owner.floorLocation</p>
-                        <p class="card-text">Kat Sayısı: @owner.totalFloor</p>
-                        <p class="card-text">@RentorSale((bool)owner.rentOrSale).Result</p>
-                        <p class="card-text">Takas: @ExchangeType((bool)owner.rentOrSale, (bool)owner.exchange).Result</p>
-                        <p class="card-text">İl: @cities.FirstOrDefault(e => e.id == owner.cityId)?.name</p>
-                        <p class="card-text">İlçe: @towns.FirstOrDefault(e => e.id == owner.townId)?.name</p>
-                        <p class="card-text">Mahalle: @neighbourhoods.FirstOrDefault(e => e.id == owner.neighbourhoodId)?.name</p>
-                        <p class="card-text">Fiyat: @owner.price</p>
-                        <button @onclick="(() => Delete(owner))">Sil</button>
+        int i = 0;
+        @foreach (var ownerEntry in ownerGroup)
+        {
+            i++;
+            string imageurll = "https://mdbcdn.b-cdn.net/img/new/standard/city/04" + i + ".webp";
+            <div class="col">
+                <div class="card h-100">
+                    <img src=@imageurll class="card-img-top" alt="Hollywood Sign on The Hill" />
+                    <div class="card-body">
+                        <h2 class="card-title">@ownerEntry.owner.title</h2>
+                        <h5 class="card-text">Detay: @ownerEntry.owner.contents</h5>
+                        <p class="card-text">m² : @ownerEntry.owner.squareFeet</p>
+                        <p class="card-text">Oda Sayısı : @ownerEntry.owner.roomCount</p>
+                        <p class="card-text">Banyo sayısı : @ownerEntry.owner.bathCount</p>
+                        <p class="card-text">Bina Yaşı: @ownerEntry.owner.buildAge</p>
+                        <p class="card-text">Kat: @ownerEntry.owner.floorLocation</p>
+                        <p class="card-text">Kat Sayısı: @ownerEntry.owner.totalFloor</p>
+                        <p class="card-text">@RentorSale((bool)ownerEntry.owner.rentOrSale).Result</p>
+                        <p class="card-text">Takas: @ExchangeType((bool)ownerEntry.owner.rentOrSale, (bool)ownerEntry.owner.exchange).Result</p>
+                        <p class="card-text">İl: @cities.FirstOrDefault(e => e.id == ownerEntry.owner.cityId)?.name</p>
+                        <p class="card-text">İlçe: @towns.FirstOrDefault(e => e.id == ownerEntry.owner.townId)?.name</p>
+                        <p class="card-text">Mahalle: @neighbourhoods.FirstOrDefault(e => e.id == ownerEntry.owner.neighbourhoodId)?.name</p>
+                        <p class="card-text">Fiyat: @ownerEntry.owner.price</p>
+                        <button @onclick="(() => Delete(ownerEntry.owner))">Sil</button>
                     </div>
                 </div>
-            }
-        </div>
+
+            </div>
+        }
     }
 </div>
+
 
 <!-- Modal Parsel -->
 <div class="modal fade" id="ParselModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -288,14 +297,22 @@
     protected override async Task OnInitializedAsync()
     {
         base.OnInitializedAsync();
+
+        var categoryResult = await categoryService.GetAll();
+        foreach (var categoryitem in categoryResult)
+        {
+            categories.Add(categoryitem);
+        }
+
         var result = await OwnerShipService.GetAll();
         foreach (var item in result)
         {
-            if (item.categoryId == 1)
-                homeOwner.Add(item);
-            else
+            if (categories.FirstOrDefault(e => e.id == item.categoryId).name.ToLower() == "parsel")
                 ownerShips.Add(item);
+            else
+                homeOwner.Add(item);
         }
+
         var townsresult = await townService.GetAll();
         foreach (var townitem in townsresult)
         {
@@ -320,13 +337,9 @@
             customers.Add(customeritem);
         }
 
-        var categoryResult = await categoryService.GetAll();
-        foreach (var categoryitem in categoryResult)
-        {
-            categories.Add(categoryitem);
-        }
+       
     }
-    }
+}
 
 @code {
     async void Delete(OwnerShip ownerShip)
@@ -334,7 +347,7 @@
         await OwnerShipService.Delete(ownerShip);
         await JSRuntime.InvokeVoidAsync("location.reload");
     }
-    }
+}
 
         @code {
 
@@ -450,7 +463,11 @@
     }
 
 <style>
-
+    .col{
+        /*border: 4px solid #ccc; */ /* Çerçeve stilini tanımla */
+        padding: 10px; /* İçeriği çerçeveden uzaklaştır */
+        margin-bottom: 10px; /* Portföyler arasında boşluk bırak */
+    }
     .item {
         border: 4px solid #ccc; /* Çerçeve stilini tanımla */
         padding: 10px; /* İçeriği çerçeveden uzaklaştır */

@@ -230,29 +230,56 @@
 
     async void DeleteCategory(Category category)
     {
-        await categoryService.Delete(category);
-        await JSRuntime.InvokeVoidAsync("location.reload");
+        if (category == null)
+        {
+            await JSRuntime.InvokeVoidAsync("alert", "Warning!"); // Alert
+        }
+        else
+        {
+            await categoryService.Delete(category);
+            await JSRuntime.InvokeVoidAsync("location.reload");
+        }
     }
 
     async void DeleteCity(City city)
     {
-        await cityService.Delete(city);
-        await JSRuntime.InvokeVoidAsync("location.reload");
+        if (city == null)
+        {
+            await JSRuntime.InvokeVoidAsync("alert", "Warning!"); // Alert
+        }
+        else
+        {
+            await cityService.Delete(city);
+            await JSRuntime.InvokeVoidAsync("location.reload");
+        }
     }
 
     async void DeleteTown(Town town)
     {
-        await townService.Delete(town);
-        await JSRuntime.InvokeVoidAsync("location.reload");
+        if (town == null)
+        {
+            await JSRuntime.InvokeVoidAsync("alert", "Warning!"); // Alert
+        }
+        else
+        {
+            await townService.Delete(town);
+            await JSRuntime.InvokeVoidAsync("location.reload");
+        }
     }
 
     async void DeleteNeighbourhood(Neighbourhood neighbourhood)
     {
-        await neighbourhoodService.Delete(neighbourhood);
-        await JSRuntime.InvokeVoidAsync("location.reload");
+        if (neighbourhood == null)
+        {
+            await JSRuntime.InvokeVoidAsync("alert", "Warning!"); // Alert
+        }
+        else
+        {
+            await neighbourhoodService.Delete(neighbourhood);
+            await JSRuntime.InvokeVoidAsync("location.reload");
+        }
     }
 }
-
 
 @code {
     private string NameCategory;
