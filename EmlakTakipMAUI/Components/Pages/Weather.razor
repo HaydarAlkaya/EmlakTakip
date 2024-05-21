@@ -1,8 +1,366 @@
 ﻿@page "/weather"
+@using EmlakTakipMAUI.Data
+@using EmlakTakipMAUI.Model
+@inject ICityService cityService
+@inject ITownService townService
+@inject INeighbourhoodService neighbourhoodService
+@inject ICategoryService categoryService
+@inject IJSRuntime JSRuntime
 
 <h1>Ekleme İşlemleri</h1>
 
 
 
+<div class="row row-cols-1 row-cols-md-2 g-4">
+    <div class="col">
+        <div class="card">
+            <img src="https://mdbcdn.b-cdn.net/img/new/standard/city/041.webp" class="card-img-top" alt="Hollywood Sign on The Hill" />
+            <div class="card-body">
+                <h5 class="card-title">Kategori</h5>
+                <p class="card-text">
+                    <select @bind="CategoryId" class="form-select" id="SelectedCcategory" required>
+                        <option selected disabled value="0">Kadegori Seçiniz</option>
+                        @foreach (var item in categories)
+                        {
+                            <option value="@item.id">@item.name</option>
+                        }
+                    </select>
+                </p>
+            </div>
+            <div class="d-flex justify-content-between">
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#CategoryModal">
+                    Kategori Ekle
+                </button>
+                <button @onclick="(() => DeleteCategory(categories.FirstOrDefault(e => e.id == CategoryId)))" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#CityModal">
+                    Sil
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="col">
+        <div class="card">
+            <img src="https://mdbcdn.b-cdn.net/img/new/standard/city/042.webp" class="card-img-top" alt="Palm Springs Road" />
+            <div class="card-body">
+                <h5 class="card-title">Şehir</h5>
+                <p class="card-text">
+                    <select @bind="CityId" class="form-select" id="SelectedCity" required>
+                        <option selected disabled value="0">Şehir Seçiniz</option>
+                        @foreach (var item in cities)
+                        {
+                            <option value="@item.id">@item.name</option>
+                        }
+                    </select>
+                </p>
+            </div>
+            <div class="d-flex justify-content-between">
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#CityModal">
+                    Şehir Ekle
+                </button>
+                <button @onclick="(() => DeleteCity(cities.FirstOrDefault(e => e.id == CityId)))" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#CityModal">
+                    Sil
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="col">
+        <div class="card">
+            <img src="https://mdbcdn.b-cdn.net/img/new/standard/city/043.webp" class="card-img-top" alt="Los Angeles Skyscrapers" />
+            <div class="card-body">
+                <h5 class="card-title">İlçe</h5>
+                <p class="card-text">
+                    <select @bind="TownId" class="form-select" id="SelectedCity" required>
+                        <option selected disabled value="0">İlçe Seçiniz</option>
+                        @foreach (var item in towns)
+                        {
+                            <option value="@item.id">@item.name</option>
+                        }
+                    </select>
+                </p>
+            </div>
+            <div class="d-flex justify-content-between">
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#TownModal">
+                    İlçe Ekle
+                </button>
+                <button @onclick="(() => DeleteTown(towns.FirstOrDefault(e => e.id == TownId)))" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#CityModal">
+                    Sil
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="col">
+        <div class="card">
+            <img src="https://mdbcdn.b-cdn.net/img/new/standard/city/044.webp" class="card-img-top" alt="Skyscrapers" />
+            <div class="card-body">
+                <h5 class="card-title">Mahalle</h5>
+                <p class="card-text">
+                    <select @bind="NeighbourhoodId" class="form-select" id="SelectedCity" required>
+                        <option selected disabled value="0">Mahalle Seçiniz</option>
+                        @foreach (var item in neighbourhoods)
+                        {
+                            <option value="@item.id">@item.name</option>
+                        }
+                    </select>
+                </p>
+            </div>
+            <div class="d-flex justify-content-between">
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#NeighbourhoodModal">
+                    Mahalle Ekle
+                </button>
+                <button @onclick="(() => DeleteNeighbourhood(neighbourhoods.FirstOrDefault(e => e.id == NeighbourhoodId)))" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#CityModal">
+                    Sil
+                </button>
+            </div>
+          
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="CategoryModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Kategori Ekleme</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <input @bind="NameCategory" class="form-control" type="text" placeholder="Kategori Adını Giriniz">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" @onclick="SaveChanges">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="CityModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Şehir Ekleme</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <input @bind="NameCity" class="form-control" type="text" placeholder="Şehir Adını Giriniz">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" @onclick="SaveChangesCity">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="TownModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">İlçe Ekleme</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <input @bind="NameTown" class="form-control" type="text" placeholder="İlçe Adını Giriniz">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" @onclick="SaveChangesTown">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="NeighbourhoodModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Mahalle Ekleme</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <input @bind="NameNeighbourhood" class="form-control" type="text" placeholder="Mahalle Adını Giriniz">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" @onclick="SaveChangesNeighbourhood">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+
+    List<Town> towns = new();
+    List<City> cities = new();
+    List<Neighbourhood> neighbourhoods = new();
+    List<Category> categories = new();
+    protected override async Task OnInitializedAsync()
+    {
+        base.OnInitializedAsync();
+        var townsresult = await townService.GetAll();
+        foreach (var townitem in townsresult)
+        {
+            towns.Add(townitem);
+        }
+
+        var citiesresult = await cityService.GetAll();
+        foreach (var cityitem in citiesresult)
+        {
+            cities.Add(cityitem);
+        }
+
+        var neighbourhoodsresult = await neighbourhoodService.GetAll();
+        foreach (var neighbourhoodsitem in neighbourhoodsresult)
+        {
+            neighbourhoods.Add(neighbourhoodsitem);
+        }
+
+        var categoryResult = await categoryService.GetAll();
+        foreach (var categoryitem in categoryResult)
+        {
+            categories.Add(categoryitem);
+        }
+    }
+}
+
+@code {
+    private int CityId;
+    private int CategoryId;
+    private int TownId;
+    private int NeighbourhoodId;
+
+    async void DeleteCategory(Category category)
+    {
+        await categoryService.Delete(category);
+        await JSRuntime.InvokeVoidAsync("location.reload");
+    }
+
+    async void DeleteCity(City city)
+    {
+        await cityService.Delete(city);
+        await JSRuntime.InvokeVoidAsync("location.reload");
+    }
+
+    async void DeleteTown(Town town)
+    {
+        await townService.Delete(town);
+        await JSRuntime.InvokeVoidAsync("location.reload");
+    }
+
+    async void DeleteNeighbourhood(Neighbourhood neighbourhood)
+    {
+        await neighbourhoodService.Delete(neighbourhood);
+        await JSRuntime.InvokeVoidAsync("location.reload");
+    }
+}
 
 
+@code {
+    private string NameCategory;
+    private string NameCity;
+    private string NameTown;
+    private string NameNeighbourhood;
+
+    async Task SaveChanges()
+    {
+        await categoryService.Add(new Category
+            {
+                name = NameCategory
+            });
+        await JSRuntime.InvokeVoidAsync("location.reload");
+    }
+    async Task SaveChangesCity()
+    {
+        await cityService.Add(new City
+            {
+                name = NameCity
+            });
+        await JSRuntime.InvokeVoidAsync("location.reload");
+    }
+    async Task SaveChangesTown()
+    {
+        await townService.Add(new Town
+            {
+                name = NameTown
+            });
+        await JSRuntime.InvokeVoidAsync("location.reload");
+    }
+    async Task SaveChangesNeighbourhood()
+    {
+
+        await neighbourhoodService.Add(new Neighbourhood
+            {
+                name = NameNeighbourhood
+            });
+        await JSRuntime.InvokeVoidAsync("location.reload");
+    }
+}
+
+<style>
+    .card-group {
+        border: 4px solid #ccc; /* Çerçeve stilini tanımla */
+        padding: 10px; /* İçeriği çerçeveden uzaklaştır */
+        margin-bottom: 10px; /* Portföyler arasında boşluk bırak */
+    }
+
+    .card {
+        padding: 10px; /* İçeriği çerçeveden uzaklaştır */
+        margin-bottom: 10px; /* Portföyler arasında boşluk bırak */
+    }
+
+    .item {
+        border: 4px solid #ccc; /* Çerçeve stilini tanımla */
+        padding: 10px; /* İçeriği çerçeveden uzaklaştır */
+        margin-bottom: 10px; /* Portföyler arasında boşluk bırak */
+    }
+
+    .container {
+        padding-top: 20px; /* Yukarıdan boşluk ekler */
+        padding-bottom: 20px; /* Aşağıdan boşluk ekler */
+        gap: 10px; /* Öğeler arasındaki boşluk */
+    }
+
+    .containerr {
+        display: flex;
+        gap: 10px; /* Öğeler arasındaki boşluk */
+    }
+
+    .checkbox-wrapper {
+        display: inline-block;
+        margin-right: 45px; /* İki checkbox arasındaki boşluk */
+    }
+
+    .form-select {
+        flex: 1; /* Eşit şekilde yayılmasını sağlar */
+    }
+
+    .modal-body {
+        display: flex;
+        flex-direction: column;
+        gap: 10px; /* Inputlar ve container arasında boşluk */
+    }
+
+    .modal-dialog {
+        max-width: 800px; /* Modal genişliğini ayarlar */
+    }
+
+    .input-row {
+        display: flex;
+        gap: 10px; /* Aralarındaki boşluğu ayarlar */
+        flex-wrap: wrap; /* İçerik sığmazsa alt satıra geçmeyi sağlar */
+    }
+
+        .input-row .form-control {
+            flex: 1; /* Eşit şekilde yayılmasını sağlar */
+            min-width: 150px; /* Minimum genişlik */
+        }
+
+    .modal-body {
+        display: flex;
+        flex-direction: column;
+        gap: 10px; /* Inputlar ve container arasında boşluk */
+    }
+
+    .modal-dialog {
+        max-width: 800px; /* Modal genişliğini ayarlar */
+    }
+</style>
